@@ -11,16 +11,18 @@
   <main class="container">
     <h1>Subir y previsualizar imagen (API File)</h1>
 
-    <!-- Zona de arrastrar y soltar -->
-    <div id="dropzone" tabindex="0" aria-label="Zona para arrastrar y soltar una imagen">
-      Arrastrá y soltá una imagen aquí
-      <span class="muted">o</span>
-      <label class="file-label">
-        <input id="fileInput" type="file" accept="image/*" aria-label="Elegí una imagen" />
-        <span class="button">Elegí una imagen</span>
-      </label>
-      <small id="hint">Formatos: PNG, JPG, GIF, SVG, WebP. Máx. 10&nbsp;MB.</small>
-    </div>
+    <!-- Sección exclusiva para arrastrar/soltar o hacer clic -->
+    <section class="uploader">
+      <div id="dropzone" tabindex="0" aria-label="Arrastrá y soltá una imagen o hacé clic para elegir">
+        <div class="dz-icon" aria-hidden="true">🖼️</div>
+        <p class="dz-title">Arrastrá y soltá una imagen aquí</p>
+        <p class="dz-sub">o hacé clic para seleccionar desde tu dispositivo</p>
+
+        <!-- Input real, oculto visualmente, se dispara al hacer clic en el dropzone -->
+        <input id="fileInput" type="file" accept="image/*" aria-label="Elegir una imagen" />
+        <small id="hint">Formatos: PNG, JPG, GIF, SVG, WebP. Máx. 10&nbsp;MB.</small>
+      </div>
+    </section>
 
     <output id="result" role="status" aria-live="polite"></output>
 
@@ -31,7 +33,7 @@
   </main>
 
   <footer class="footer">
-    <p>Trabajo Práctico N°1 — Programación Web | Demostración de la <strong>File API</strong> (File, FileReader, Drag & Drop).</p>
+    <p>Trabajo Práctico N°1 — Programación Web | <strong>File API</strong> (File, FileReader) + Drag & Drop.</p>
   </footer>
 </body>
 </html>

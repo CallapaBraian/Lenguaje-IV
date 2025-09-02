@@ -1,47 +1,50 @@
-// TP1 — File API + Drag & Drop
+// File API + Drag & Drop (sección dedicada)
+const dz      = document.getElementById('dropzone');
 const input   = document.getElementById('fileInput');
 const preview = document.getElementById('preview');
 const figure  = document.getElementById('figure');
 const meta    = document.getElementById('meta');
 const result  = document.getElementById('result');
-const drop    = document.getElementById('dropzone');
 
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
-// --- Entrada por <input type="file">
+// --- Click / selección de archivo ---
 input.addEventListener('change', () => {
   const file = input.files && input.files[0];
   if (file) handleFile(file);
 });
 
-// --- Drag & Drop
-['dragenter', 'dragover'].forEach(evt =>
-  drop.addEventListener(evt, e => {
-    e.preventDefault(); e.stopPropagation();
-    drop.classList.add('hover');
-  })
-);
+// Hacer que clic en la tarjeta abra el selector
+dz.addEventListener('click', () => input.click());
 
-['dragleave', 'dragend', 'drop'].forEach(evt =>
-  drop.addEventListener(evt, e => {
-    e.preventDefault(); e.stopPropagation();
-    if (evt !== 'drop') drop.classList.remove('hover');
-  })
-);
-
-drop.addEventListener('drop', e => {
-  drop.classList.remove('hover');
-  const dt = e.dataTransfer;
-  const file = dt?.items?.length ? getFirstFile(dt.items) : (dt?.files?.[0]);
-  if (file) handleFile(file);
-});
-
-// Acceso con teclado: Enter/Space abre selector
-drop.addEventListener('keydown', e => {
+// Accesible por teclado (Enter o Space)
+dz.addEventListener('keydown', e => {
   if (e.key === 'Enter' || e.key === ' ') {
     e.preventDefault();
     input.click();
   }
+});
+
+// --- Drag & Drop ---
+['dragenter', 'dragover'].forEach(evt =>
+  dz.addEventListener(evt, e => {
+    e.preventDefault(); e.stopPropagation();
+    dz.classList.add('hover');
+  })
+);
+
+['dragleave', 'dragend', 'drop'].forEach(evt =>
+  dz.addEventListener(evt, e => {
+    e.preventDefault(); e.stopPropagation();
+    if (evt !== 'drop') dz.classList.remove('hover');
+  })
+);
+
+dz.addEventListener('drop', e => {
+  dz.classList.remove('hover');
+  const dt = e.dataTransfer;
+  const file = dt?.items?.length ? getFirstFile(dt.items) : (dt?.files?.[0]);
+  if (file) handleFile(file);
 });
 
 // --- Helpers ---
@@ -55,17 +58,17 @@ function getFirstFile(items) {
 function handleFile(file) {
   clearPreview();
 
-  // 1) Validación: tipo imagen
+  // 1) Validación tipo
   if (!file.type || !file.type.startsWith('image/')) {
     return showError('El archivo seleccionado no es una imagen.');
   }
 
-  // 2) Validación: tamaño
+  // 2) Validación tamaño
   if (file.size > MAX_SIZE) {
     return showError('La imagen supera el máximo permitido (10 MB).');
   }
 
-  // 3) Leer y mostrar
+  // 3) Mostrar
   const reader = new FileReader();
   reader.addEventListener('load', ev => {
     preview.src = ev.target.result; // Data URL
