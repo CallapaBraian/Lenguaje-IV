@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TP1 — API File: Subir y previsualizar imagen</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Subir y previsualizar imagen (API File)</h1>
+
+    <form id="uploadForm" class="card" aria-label="Formulario para subir imagen">
+      <label class="file-label">
+        <input id="fileInput" type="file" accept="image/*" aria-label="Elegí una imagen" />
+        <span class="button">Elegí una imagen</span>
+      </label>
+      <small id="hint">Formatos admitidos: PNG, JPG, GIF, SVG, WebP. Máximo 10&nbsp;MB.</small>
+    </form>
+
+    <output id="result" role="status" aria-live="polite"></output>
+
+    <figure id="figure" class="hidden">
+      <img id="preview" alt="Vista previa de la imagen seleccionada" />
+      <figcaption id="meta"></figcaption>
+    </figure>
+  </main>
+
+  <footer class="footer">
+    <p>Trabajo Práctico N°1 — Programación Web | Demostración del uso de la <strong>File API</strong> (File, FileReader).</p>
+  </footer>
+</body>
+</html>
