@@ -19,16 +19,16 @@ input.addEventListener('change', () => {
     return;
   }
 
-  // 2) Validación de tamaño (opcional)
+  // 2) Validación de tamaño (máximo 10 MB)
   if (file.size > MAX_SIZE) {
     showError('La imagen supera el máximo permitido (10 MB).');
     return;
   }
 
-  // 3) Usamos FileReader para leer el contenido y mostrarlo en un <img>
+  // 3) Usamos FileReader para mostrar la imagen
   const reader = new FileReader();
   reader.addEventListener('load', (ev) => {
-    preview.src = ev.target.result; // data URL
+    preview.src = ev.target.result; // Data URL
     preview.onload = () => {
       figure.classList.remove('hidden');
       const w = preview.naturalWidth;
