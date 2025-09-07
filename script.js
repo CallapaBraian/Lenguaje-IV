@@ -1,105 +1,113 @@
-// File API + Drag & Drop (sección dedicada)
-const dz      = document.getElementById('dropzone');
-const input   = document.getElementById('fileInput');
-const preview = document.getElementById('preview');
-const figure  = document.getElementById('figure');
-const meta    = document.getElementById('meta');
-const result  = document.getElementById('result');
+// File API + Drag & Drop + FileReader (variables y funciones en español)
 
-const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+// --- Referencias a elementos del DOM ---
+const zonaArrastre     = document.getElementById('dropzone');
+const entradaArchivo   = document.getElementById('fileInput');
+const vistaPrevia      = document.getElementById('preview');
+const contenedorImagen = document.getElementById('figure');
+const metadatosImagen  = document.getElementById('meta');
+const mensajeResultado = document.getElementById('result');
+
+// Límite de tamaño (10 MB)
+const TAM_MAXIMO = 10 * 1024 * 1024;
 
 // --- Click / selección de archivo ---
-input.addEventListener('change', () => {
-  const file = input.files && input.files[0];
-  if (file) handleFile(file);
+entradaArchivo.addEventListener('change', () => {
+  const archivo = entradaArchivo.files && entradaArchivo.files[0];
+  if (archivo) manejarArchivo(archivo);
 });
 
 // Hacer que clic en la tarjeta abra el selector
-dz.addEventListener('click', () => input.click());
+zonaArrastre.addEventListener('click', () => entradaArchivo.click());
 
 // Accesible por teclado (Enter o Space)
-dz.addEventListener('keydown', e => {
+zonaArrastre.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' || e.key === ' ') {
     e.preventDefault();
-    input.click();
+    entradaArchivo.click();
   }
 });
 
 // --- Drag & Drop ---
-['dragenter', 'dragover'].forEach(evt =>
-  dz.addEventListener(evt, e => {
-    e.preventDefault(); e.stopPropagation();
-    dz.classList.add('hover');
+['dragenter', 'dragover'].forEach((evento) =>
+  zonaArrastre.addEventListener(evento, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    zonaArrastre.classList.add('hover');
   })
 );
 
-['dragleave', 'dragend', 'drop'].forEach(evt =>
-  dz.addEventListener(evt, e => {
-    e.preventDefault(); e.stopPropagation();
-    if (evt !== 'drop') dz.classList.remove('hover');
+['dragleave', 'dragend', 'drop'].forEach((evento) =>
+  zonaArrastre.addEventListener(evento, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (evento !== 'drop') zonaArrastre.classList.remove('hover');
   })
 );
 
-dz.addEventListener('drop', e => {
-  dz.classList.remove('hover');
+zonaArrastre.addEventListener('drop', (e) => {
+  zonaArrastre.classList.remove('hover');
   const dt = e.dataTransfer;
-  const file = dt?.items?.length ? getFirstFile(dt.items) : (dt?.files?.[0]);
-  if (file) handleFile(file);
+  const archivo = dt?.items?.length
+    ? obtenerPrimerArchivo(dt.items)
+    : dt?.files?.[0];
+  if (archivo) manejarArchivo(archivo);
 });
 
 // --- Helpers ---
-function getFirstFile(items) {
+function obtenerPrimerArchivo(items) {
   for (const item of items) {
     if (item.kind === 'file') return item.getAsFile();
   }
   return null;
 }
 
-function handleFile(file) {
-  clearPreview();
+function manejarArchivo(archivo) {
+  limpiarVistaPrevia();
 
   // 1) Validación tipo
-  if (!file.type || !file.type.startsWith('image/')) {
-    return showError('El archivo seleccionado no es una imagen.');
+  if (!archivo.type || !archivo.type.startsWith('image/')) {
+    return mostrarError('El archivo seleccionado no es una imagen.');
   }
 
   // 2) Validación tamaño
-  if (file.size > MAX_SIZE) {
-    return showError('La imagen supera el máximo permitido (10 MB).');
+  if (archivo.size > TAM_MAXIMO) {
+    return mostrarError('La imagen supera el máximo permitido (10 MB).');
   }
 
   // 3) Mostrar
-  const reader = new FileReader();
-  reader.addEventListener('load', ev => {
-    preview.src = ev.target.result; // Data URL
-    preview.onload = () => {
-      figure.classList.remove('hidden');
-      const w = preview.naturalWidth;
-      const h = preview.naturalHeight;
-      meta.textContent = `${file.name} • ${(file.size/1024).toFixed(1)} KB • ${w}×${h}px`;
-      showOk('Imagen cargada correctamente.');
+  const lector = new FileReader();
+  lector.addEventListener('load', (ev) => {
+    vistaPrevia.src = ev.target.result; // Data URL
+    vistaPrevia.onload = () => {
+      contenedorImagen.classList.remove('hidden');
+      const ancho = vistaPrevia.naturalWidth;
+      const alto  = vistaPrevia.naturalHeight;
+      metadatosImagen.textContent =
+        `${archivo.name} • ${(archivo.size / 1024).toFixed(1)} KB • ${ancho}×${alto}px`;
+      mostrarOk('Imagen cargada correctamente.');
     };
   });
-  reader.addEventListener('error', () => showError('No se pudo leer el archivo.'));
-  reader.readAsDataURL(file);
+  lector.addEventListener('error', () => mostrarError('No se pudo leer el archivo.'));
+  lector.readAsDataURL(archivo);
 }
 
-function clearPreview() {
-  result.textContent = '';
-  result.classList.remove('ok', 'err');
-  meta.textContent = '';
-  preview.removeAttribute('src');
-  figure.classList.add('hidden');
+function limpiarVistaPrevia() {
+  mensajeResultado.textContent = '';
+  mensajeResultado.classList.remove('ok', 'err');
+  metadatosImagen.textContent = '';
+  vistaPrevia.removeAttribute('src');
+  contenedorImagen.classList.add('hidden');
 }
 
-function showError(msg) {
-  result.textContent = msg;
-  result.classList.remove('ok');
-  result.classList.add('err');
+function mostrarError(msg) {
+  mensajeResultado.textContent = msg;
+  mensajeResultado.classList.remove('ok');
+  mensajeResultado.classList.add('err');
 }
 
-function showOk(msg) {
-  result.textContent = msg;
-  result.classList.remove('err');
-  result.classList.add('ok');
+function mostrarOk(msg) {
+  mensajeResultado.textContent = msg;
+  mensajeResultado.classList.remove('err');
+  mensajeResultado.classList.add('ok');
 }
